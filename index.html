@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X-Wortliste - Pro Version</title>
     <!-- Integriertes Favicon (schwarz/weißes X) -->
     <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><text x='50' y='54' font-family='sans-serif' font-size='60' fill='white' text-anchor='middle' dominant-baseline='middle'>X</text></svg>">
@@ -14,9 +15,8 @@
 
         .container { 
             position: relative; z-index: 1; max-width: 800px; margin: 40px auto; 
-            background: rgba(0, 0, 0, 0.7); padding: 30px; border: 1px solid #fff; border-radius: 8px;
-            /* Höhe angepasst, damit der Footer nichts überdeckt */
-            max-height: calc(100vh - 200px); overflow-y: auto; backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.35); padding: 30px; border: 1px solid #fff; border-radius: 8px;
+            max-height: calc(100vh - 200px); overflow-y: auto; backdrop-filter: blur(8px);
         }
 
         /* Header & Input Bereich */
@@ -31,6 +31,10 @@
         }
         input[type="text"]:focus { border-color: #fff; background: rgba(255,255,255,0.1); }
         
+        /* Suchleiste */
+        .search-container { margin-bottom: 20px; }
+        .search-bar { width: 100%; box-sizing: border-box; border-color: #555; }
+
         /* Steuerungs-Buttons */
         .btn-control {
             background: #fff; color: #000; border: 2px solid #fff; padding: 10px 15px; 
@@ -38,63 +42,58 @@
         }
         .btn-control:hover { background: #000; color: #fff; }
 
-        /* --- NEUES SLIDER DESIGN --- */
+        /* Slider Design */
         .config-area { display: flex; align-items: center; gap: 15px; font-size: 0.95em; color: #ccc; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 20px; }
         
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 150px;
-            background: transparent;
-        }
-        input[type="range"]:focus {
-            outline: none;
-        }
-        /* Spur (Track) */
+        input[type="range"] { -webkit-appearance: none; appearance: none; -moz-appearance: none; width: 150px; background: transparent; }
+        input[type="range"]:focus { outline: none; }
+
+        /* WebKit track */
         input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer;
-            background: #444; border-radius: 2px;
-            transition: background 0.3s;
+            width: 100%; height: 4px; cursor: pointer; background: #444; border-radius: 2px; transition: background 0.3s;
         }
-        input[type="range"]:hover::-webkit-slider-runnable-track {
-            background: #666;
-        }
-        /* Griff (Thumb) */
+        input[type="range"]:hover::-webkit-slider-runnable-track { background: #666; }
+
+        /* WebKit thumb */
         input[type="range"]::-webkit-slider-thumb {
-            height: 16px; width: 16px; border-radius: 50%;
-            background: #fff; cursor: pointer;
-            -webkit-appearance: none;
-            margin-top: -6px; /* (Track height / 2) - (Thumb height / 2) */
-            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            height: 16px; width: 16px; border-radius: 50%; background: #fff; cursor: pointer;
+            -webkit-appearance: none; margin-top: -6px; box-shadow: 0 0 5px rgba(255,255,255,0.5);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.3);
-            box-shadow: 0 0 10px rgba(255,255,255,0.8);
-        }
-        /* Firefox Support */
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+
+        /* Firefox track & thumb */
         input[type="range"]::-moz-range-track {
-            width: 100%; height: 4px; cursor: pointer;
-            background: #444; border-radius: 2px;
+            width: 100%; height: 4px; cursor: pointer; background: #444; border-radius: 2px; transition: background 0.3s;
         }
+        input[type="range"]:hover::-moz-range-track { background: #666; }
+
         input[type="range"]::-moz-range-thumb {
-            height: 16px; width: 16px; border-radius: 50%;
-            background: #fff; cursor: pointer; border: none;
-            box-shadow: 0 0 5px rgba(255,255,255,0.5);
-            transition: transform 0.2s ease;
+            height: 16px; width: 16px; border-radius: 50%; background: #fff; cursor: pointer;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
         }
-        input[type="range"]::-moz-range-thumb:hover {
-            transform: scale(1.3);
-        }
+        input[type="range"]::-moz-range-thumb:hover { transform: scale(1.3); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
-        /* Hauptkategorien */
+        /* Kategorien & Listen */
         .main-category-title { text-transform: uppercase; letter-spacing: 2px; color: #fff; background: rgba(255,255,255,0.1); padding: 10px; margin-top: 20px; border-left: 4px solid #fff; font-size: 1.4em; }
+        
+        /* Interaktiver Verwaltungs-Button (Hauptseite) */
+        .management-trigger {
+            background: rgba(255, 68, 68, 0.15);
+            border-left-color: #ff4444;
+            color: #ffdddd;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .management-trigger:hover {
+            background: rgba(255, 68, 68, 0.3);
+            transform: translateX(2px);
+        }
 
-        /* Alphabet-Abschnitte */
         .letter-section { margin-bottom: 35px; }
         .letter-header { font-size: 2.2rem; font-weight: 900; color: #fff; margin: 20px 0 10px 0; display: block; border-bottom: 1px solid #444; padding-bottom: 5px; }
 
-        /* Listen */
         ul { list-style-type: none; padding: 0; margin: 0; line-height: 2; }
         li { 
             background: #fff; color: #000; margin: 4px; padding: 5px 8px 5px 12px; 
@@ -102,70 +101,33 @@
             transition: opacity 0.3s ease;
         }
 
-        /* Ausblend-Button (Standard-Wörter) */
+        /* Buttons in den Listen */
         .hide-btn {
             background: none; border: none; color: #666; font-size: 14px; 
-            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1;
-            transition: color 0.2s;
+            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s;
         }
         .hide-btn:hover { color: #000; }
 
-        /* Lösch-Button (Eigene Wörter) */
         .delete-btn {
-            background: none; border: none; font-size: 14px; 
-            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1;
-            transition: transform 0.2s; filter: grayscale(100%);
+            background: none; border: none; font-size: 14px; margin-left: 10px; 
+            cursor: pointer; padding: 0; line-height: 1; transition: transform 0.2s; filter: grayscale(100%);
         }
         .delete-btn:hover { filter: grayscale(0%); transform: scale(1.2); }
         
-        /* --- NEUER FOOTER BEREICH (FIXIERT) --- */
+        /* Footer */
         .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px 0;
-            background: rgba(0, 0, 0, 0.85); /* Etwas dunkler für besseren Kontrast */
-            backdrop-filter: blur(8px);
-            border-top: 1px solid #333;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #888;
-            z-index: 10; /* Bleibt über dem Canvas */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+            position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px 0;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); border-top: 1px solid #333;
+            text-align: center; font-size: 0.9rem; color: #888; z-index: 10; 
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
         }
-        .footer-brand {
-            font-size: 1.1rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #fff;
-            text-transform: uppercase;
-        }
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .footer-links a {
-            color: #aaa;
-            text-decoration: none;
-            transition: color 0.2s, text-shadow 0.2s;
-        }
-        .footer-links a:hover {
-            color: #fff;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
-        .footer-separator {
-            color: #444;
-            font-size: 0.8em;
-        }
+        .footer-brand { font-size: 1.1rem; font-weight: bold; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
+        .footer-links { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .footer-links a { color: #aaa; text-decoration: none; transition: color 0.2s, text-shadow 0.2s; }
+        .footer-links a:hover { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .footer-separator { color: #444; font-size: 0.8em; }
 
-        /* Scrollbar-Styling für den Container */
+        /* Scrollbar */
         .container::-webkit-scrollbar { width: 8px; }
         .container::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
         .container::-webkit-scrollbar-thumb { background: #fff; border-radius: 4px; }
@@ -182,11 +144,14 @@
     </div>
 
     <div class="input-area">
-        <input type="text" id="wordInput" placeholder="Eigenes Wort hinzufügen (z.B. Matrix)...">
+        <input type="text" id="wordInput" placeholder="Eigenes Wort hinzufügen (z.B. Matrix, Apfel)...">
         <button class="btn-control" onclick="addNewWord()">Hinzufügen</button>
     </div>
 
-    <!-- Partikel Geschwindigkeit (Neues Design) -->
+    <div class="search-container">
+        <input type="text" id="searchBar" class="search-bar" placeholder="Wortliste live durchsuchen..." oninput="renderEverything()">
+    </div>
+
     <div class="config-area">
         <label for="speedSlider">Animations-Tempo:</label>
         <input type="range" id="speedSlider" min="0" max="3" step="0.1" value="0.5">
@@ -195,40 +160,99 @@
     <div id="list-container"></div>
 </div>
 
-<!-- Footer AUSSERHALB des Containers -->
 <div class="footer">
     <div class="footer-brand">xq</div>
     <div class="footer-links">
         <a href="https://discord.com/users/1268984542664855557" target="_blank">Discord</a>
         <span class="footer-separator">|</span>
         <a href="https://www.roblox.com/users/profile?username=xq_srl" target="_blank">Roblox (xq_srl)</a>
-        <span class="footer-separator">
     </div>
 </div>
 
 <script>
-    // === 1. DATEN-LOGIK (Standardwörter) ===
     const baseEnd = ["Affix","Alex","Annex","Anthrax","Apex","Borax","Box","Calyx","Cervix","Climax","Complex","Cox","Convex","Cortex","Crucifix","Crux","Detox","Duplex","Equinox","Flax","Flex","Flux","Fox","Hax","Hex","Helix","hex","Hoax","Ibex","Inbox","Index","Jukebox","Kleenex","Larynx","Latex","Lynx","Matrix","Max","Minimax","Mix","Multiplex","Orthodox","Outbox","Ox","Paradox","Phalanx","Phoenix","Pox","Prefix","Pyrex","Rex","Reflex","Relax","Remix","Sandbox","Sax","Sex","Six","Spandex","Sphinx","Styx","Suffix","Syntax","Tax","Tex","Thorax","Toolbox","Unisex","Unorthodox","Vertex","Vortex","Wax","xebec","xebecs","xeno","xenthic","xenophobe","xenophobes","xenophobic","xerography","xis","xray","xylem","xylo","xylophone","xylophones","xeric","Nox","xenon","xylitol","xenial","xenophobia","nix","dox"];
     const baseStartEnd = ["Xanax","Xerox","XXX"];
 
     let hiddenWords = new Set();
+    let currentView = 'main'; // Kann 'main' oder 'management' sein
 
-    // === 2. LISTEN-RENDER-LOGIK ===
+    function switchView(view) {
+        currentView = view;
+        renderEverything();
+    }
+
     function renderEverything() {
         const container = document.getElementById('list-container');
         container.innerHTML = ''; 
 
-        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
-        let customWordsSet = new Set([...saved.end, ...saved.startEnd].map(w => w.toLowerCase()));
+        const searchQuery = document.getElementById('searchBar').value.toLowerCase().trim();
 
-        let allEnd = [...new Set([...baseEnd, ...saved.end])].sort((a,b) => a.localeCompare(b));
-        let allStartEnd = [...new Set([...baseStartEnd, ...saved.startEnd])].sort((a,b) => a.localeCompare(b));
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [], other: [] };
+        if (!saved.other) saved.other = [];
 
-        container.appendChild(createCategoryDOM('Wörter, die auf "X" enden', allEnd, customWordsSet));
-        container.appendChild(createCategoryDOM('Wörter, die mit "X" beginnen UND auf "X" enden', allStartEnd, customWordsSet));
+        let allEnd = [...new Set([...baseEnd, ...saved.end])];
+        let allStartEnd = [...new Set([...baseStartEnd, ...saved.startEnd])];
+        let allOther = [...new Set(saved.other)];
+        let allCustom = [...new Set([...saved.end, ...saved.startEnd, ...saved.other])];
+
+        // --- ANSICHT 1: MANAGEMENT-SEITE ---
+        if (currentView === 'management') {
+            // Zurück-Button erzeugen
+            let backBtn = document.createElement('button');
+            backBtn.className = 'btn-control';
+            backBtn.style.marginBottom = '20px';
+            backBtn.innerText = '⬅ Zurück zur Hauptübersicht';
+            backBtn.onclick = () => switchView('main');
+            container.appendChild(backBtn);
+
+            // Nur die Kategorie der hinzugefügten Wörter rendern (mit Mülleimer)
+            const catCustom = createCategoryDOM('Hinzugefügte Wörter (Verwaltung)', allCustom, searchQuery, true);
+            if (catCustom) {
+                container.appendChild(catCustom);
+            } else if (allCustom.length === 0) {
+                // Falls alles gelöscht wurde, automatisch zurück
+                switchView('main');
+            }
+            return; // Beendet das Rendern für diese Ansicht
+        }
+
+        // --- ANSICHT 2: HAUPTANSICHT ---
+        // Link-Button zur Verwaltungsseite rendern, falls eigene Wörter existieren
+        if (allCustom.length > 0) {
+            let trigger = document.createElement('div');
+            trigger.className = 'main-category-title management-trigger';
+            trigger.innerText = '📋 Hinzugefügte Wörter verwalten ➔';
+            trigger.onclick = () => switchView('management');
+            container.appendChild(trigger);
+        }
+
+        // Reguläre Hauptlisten rendern (Alle Wörter haben hier das normale Ausblend-"X")
+        const catEnd = createCategoryDOM('Wörter, die auf "X" enden', allEnd, searchQuery, false);
+        if (catEnd) container.appendChild(catEnd);
+
+        const catStartEnd = createCategoryDOM('Wörter, die mit "X" beginnen UND auf "X" enden', allStartEnd, searchQuery, false);
+        if (catStartEnd) container.appendChild(catStartEnd);
+
+        if (allOther.length > 0) {
+            const catOther = createCategoryDOM('Weitere Wörter', allOther, searchQuery, false);
+            if (catOther) container.appendChild(catOther);
+        }
+
+        if (container.children.length === 0) {
+            let emptyMessage = document.createElement('div');
+            emptyMessage.style.color = '#ccc';
+            emptyMessage.style.padding = '18px 16px';
+            emptyMessage.style.textAlign = 'center';
+            emptyMessage.style.fontStyle = 'italic';
+            emptyMessage.innerText = 'Keine passenden Wörter gefunden. Probiere eine andere Suche oder ergänze die Liste mit einem eigenen Wort.';
+            container.appendChild(emptyMessage);
+        }
     }
 
-    function createCategoryDOM(titleText, words, customWordsSet) {
+    function createCategoryDOM(titleText, words, searchQuery, isManagementCategory) {
+        let filteredWords = words.filter(w => w.toLowerCase().includes(searchQuery));
+        if (filteredWords.length === 0) return null;
+
         let wrapper = document.createElement('div');
         
         let title = document.createElement('div');
@@ -237,13 +261,16 @@
         wrapper.appendChild(title);
 
         let groups = {};
-        words.forEach(w => {
+        filteredWords.forEach(w => {
             let letter = w.charAt(0).toUpperCase();
             if (!groups[letter]) groups[letter] = [];
             groups[letter].push(w);
         });
 
+        let hasVisibleContent = false;
+
         Object.keys(groups).sort().forEach(letter => {
+            let letterHasWords = false;
             let section = document.createElement('div');
             section.className = 'letter-section';
             
@@ -253,43 +280,51 @@
             section.appendChild(header);
 
             let ul = document.createElement('ul');
-            groups[letter].forEach(word => {
-                let li = document.createElement('li');
+            
+            groups[letter].sort((a, b) => a.localeCompare(b)).forEach(word => {
                 let wordLower = word.toLowerCase();
-                let isCustomWord = customWordsSet.has(wordLower);
                 
-                if (hiddenWords.has(wordLower)) li.style.display = 'none';
+                // In den normalen Listen ausgeblendete Wörter verstecken
+                if (!isManagementCategory && hiddenWords.has(wordLower)) return;
                 
+                letterHasWords = true;
+                hasVisibleContent = true;
+
+                let li = document.createElement('li');
                 li.innerText = word;
                 
                 let btn = document.createElement('button');
                 
-                if (isCustomWord) {
+                if (isManagementCategory) {
+                    // Mülleimer NUR auf der gesonderten Verwaltungsseite
                     btn.className = 'delete-btn';
                     btn.innerHTML = '🗑️';
                     btn.title = 'Dauerhaft löschen';
                     btn.onclick = () => { deleteCustomWord(word); };
                 } else {
+                    // Das ganz normale "✖" für absolut jedes Wort auf der Hauptseite
                     btn.className = 'hide-btn';
                     btn.innerHTML = '✖';
                     btn.title = 'Ausblenden';
                     btn.onclick = () => {
                         hiddenWords.add(wordLower);
-                        li.style.display = 'none';
+                        renderEverything();
                     };
                 }
                 
                 li.appendChild(btn);
                 ul.appendChild(li);
             });
-            section.appendChild(ul);
-            wrapper.appendChild(section);
+
+            if (letterHasWords) {
+                section.appendChild(ul);
+                wrapper.appendChild(section);
+            }
         });
 
-        return wrapper;
+        return hasVisibleContent ? wrapper : null;
     }
 
-    // === 3. INTERAKTIONEN ===
     function addNewWord() {
         let input = document.getElementById('wordInput');
         let word = input.value.trim();
@@ -297,20 +332,20 @@
         if (!word) return;
         
         let lower = word.toLowerCase();
-        if (!lower.endsWith('x')) {
-            alert('Das Wort muss zwingend auf "X" enden!');
-            return;
-        }
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [], other: [] };
+        if (!saved.other) saved.other = [];
 
-        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
-
-        if (lower.startsWith('x')) {
+        if (lower.startsWith('x') && lower.endsWith('x')) {
             if (!baseStartEnd.some(w => w.toLowerCase() === lower) && !saved.startEnd.some(w => w.toLowerCase() === lower)) {
                 saved.startEnd.push(word);
             }
-        } else {
+        } else if (lower.endsWith('x')) {
             if (!baseEnd.some(w => w.toLowerCase() === lower) && !saved.end.some(w => w.toLowerCase() === lower)) {
                 saved.end.push(word);
+            }
+        } else {
+            if (!saved.other.some(w => w.toLowerCase() === lower)) {
+                saved.other.push(word);
             }
         }
 
@@ -322,13 +357,22 @@
     }
 
     function deleteCustomWord(wordToRemove) {
-        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [], other: [] };
         let targetLower = wordToRemove.toLowerCase();
         
-        saved.end = saved.end.filter(w => w.toLowerCase() !== targetLower);
-        saved.startEnd = saved.startEnd.filter(w => w.toLowerCase() !== targetLower);
+        if (saved.end) saved.end = saved.end.filter(w => w.toLowerCase() !== targetLower);
+        if (saved.startEnd) saved.startEnd = saved.startEnd.filter(w => w.toLowerCase() !== targetLower);
+        if (saved.other) saved.other = saved.other.filter(w => w.toLowerCase() !== targetLower);
         
         localStorage.setItem('customXWords', JSON.stringify(saved));
+        hiddenWords.delete(targetLower);
+        
+        // Überprüfung, ob nach dem Löschen überhaupt noch Custom-Wörter da sind
+        let allCustomCount = (saved.end||[]).length + (saved.startEnd||[]).length + (saved.other||[]).length;
+        if (allCustomCount === 0) {
+            currentView = 'main'; // Zurück zur Hauptseite, wenn leer
+        }
+        
         renderEverything();
     }
 
@@ -343,80 +387,57 @@
 
     renderEverything();
 
-    // === 4. CANVAS PARTIKEL HINTERGRUND ===
+    // === CANVAS HINTERGRUND ===
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const speedSlider = document.getElementById('speedSlider');
     
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    let mouseX = -100;
-    let mouseY = -100;
-    
-    window.addEventListener('mousemove', function(e) {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
+    let mouseX = -100; let mouseY = -100;
+    window.addEventListener('mousemove', function(e) { mouseX = e.clientX; mouseY = e.clientY; });
 
     let particles = [];
     for(let i = 0; i < 80; i++) {
         particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            baseVx: (Math.random() - 0.5) * 1.5,
-            baseVy: (Math.random() - 0.5) * 1.5
+            x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            baseVx: (Math.random() - 0.5) * 1.5, baseVy: (Math.random() - 0.5) * 1.5
         });
     }
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillStyle = 'white'; ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
 
         let speedMult = parseFloat(speedSlider.value);
 
         particles.forEach((p, i) => {
-            let vx = p.baseVx * speedMult;
-            let vy = p.baseVy * speedMult;
-
-            const repulsionRadius = 150; 
-            const repulsionForce = 15;   
+            let vx = p.baseVx * speedMult; let vy = p.baseVy * speedMult;
+            const repulsionRadius = 150; const repulsionForce = 15;   
             
-            let dx = p.x - mouseX;
-            let dy = p.y - mouseY;
+            let dx = p.x - mouseX; let dy = p.y - mouseY;
             let distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < repulsionRadius) {
                 let force = (repulsionRadius - distance) / repulsionRadius; 
                 let angle = Math.atan2(dy, dx); 
-                
                 vx += Math.cos(angle) * force * repulsionForce;
                 vy += Math.sin(angle) * force * repulsionForce;
             }
 
-            p.x += vx;
-            p.y += vy;
+            p.x += vx; p.y += vy;
             
             if(p.x < 0 || p.x > canvas.width) p.baseVx *= -1;
             if(p.y < 0 || p.y > canvas.height) p.baseVy *= -1;
             
-            ctx.beginPath(); 
-            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); 
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
 
             for(let j = i + 1; j < particles.length; j++) {
-                let dxCon = p.x - particles[j].x;
-                let dyCon = p.y - particles[j].y;
+                let dxCon = p.x - particles[j].x; let dyCon = p.y - particles[j].y;
                 if(Math.sqrt(dxCon * dxCon + dyCon * dyCon) < 150) {
-                    ctx.beginPath(); 
-                    ctx.moveTo(p.x, p.y); 
-                    ctx.lineTo(particles[j].x, particles[j].y); 
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
                 }
             }
         });
