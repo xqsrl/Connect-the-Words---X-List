@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>X-Wortliste - Pro Version</title>
+    <!-- Integriertes Favicon (schwarz/weißes X) -->
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><text x='50' y='54' font-family='sans-serif' font-size='60' fill='white' text-anchor='middle' dominant-baseline='middle'>X</text></svg>">
+    <style>
+        /* Grunddesign */
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #000; color: #fff; }
+        
+        /* Canvas Hintergrund */
+        #canvas { position: absolute; top: 0; left: 0; z-index: 0; }
+
+        .container { 
+            position: relative; z-index: 1; max-width: 800px; margin: 50px auto; 
+            background: rgba(0, 0, 0, 0.7); padding: 30px; border: 1px solid #fff; border-radius: 8px;
+            max-height: 80vh; overflow-y: auto; backdrop-filter: blur(5px);
+        }
+
+        /* Header & Input Bereich */
+        .header-area { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fff; margin-bottom: 20px; padding-bottom: 10px; }
+        h1 { margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .input-area { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
+        input[type="text"] { 
+            background: rgba(255,255,255,0.05); color: #fff; border: 1px solid #777; 
+            padding: 10px 15px; border-radius: 4px; font-size: 1rem; outline: none; flex-grow: 1;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        input[type="text"]:focus { border-color: #fff; background: rgba(255,255,255,0.1); }
+        
+        /* Steuerungs-Buttons */
+        .btn-control {
+            background: #fff; color: #000; border: 2px solid #fff; padding: 10px 15px; 
+            font-weight: bold; cursor: pointer; border-radius: 4px; transition: all 0.3s;
+        }
+        .btn-control:hover { background: #000; color: #fff; }
+
+        /* Partikel Slider */
+        .config-area { display: flex; align-items: center; gap: 10px; font-size: 0.9em; color: #ccc; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 20px; }
+        input[type="range"] { accent-color: #fff; cursor: pointer; }
+
+        /* Hauptkategorien */
+        .main-category-title { text-transform: uppercase; letter-spacing: 2px; color: #fff; background: rgba(255,255,255,0.1); padding: 10px; margin-top: 20px; border-left: 4px solid #fff; font-size: 1.4em; }
+
+        /* Alphabet-Abschnitte */
+        .letter-section { margin-bottom: 35px; }
+        .letter-header { font-size: 2.2rem; font-weight: 900; color: #fff; margin: 20px 0 10px 0; display: block; border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+        /* Listen */
+        ul { list-style-type: none; padding: 0; margin: 0; line-height: 2; }
+        li { 
+            background: #fff; color: #000; margin: 4px; padding: 5px 8px 5px 12px; 
+            border-radius: 2px; display: inline-flex; align-items: center; font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Ausblend-Button (Standard-Wörter) */
+        .hide-btn {
+            background: none; border: none; color: #666; font-size: 14px; 
+            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1;
+            transition: color 0.2s;
+        }
+        .hide-btn:hover { color: #000; }
+
+        /* Lösch-Button (Eigene Wörter) */
+        .delete-btn {
+            background: none; border: none; font-size: 14px; 
+            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1;
+            transition: transform 0.2s; filter: grayscale(100%);
+        }
+        .delete-btn:hover { filter: grayscale(0%); transform: scale(1.2); }
+        
+        /* Scrollbar-Styling für den Container */
+        .container::-webkit-scrollbar { width: 8px; }
+        .container::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+        .container::-webkit-scrollbar-thumb { background: #fff; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+    <div class="header-area">
+        <h1>X-Fokus</h1>
+        <button class="btn-control" onclick="showAll()">Ausgeblendete wiederherstellen</button>
+    </div>
+
+    <!-- Bereich zum Hinzufügen von Wörtern (Zurücksetzen Button entfernt) -->
+    <div class="input-area">
+        <input type="text" id="wordInput" placeholder="Eigenes Wort hinzufügen (z.B. Matrix)...">
+        <button class="btn-control" onclick="addNewWord()">Hinzufügen</button>
+    </div>
+
+    <!-- Partikel Geschwindigkeit -->
+    <div class="config-area">
+        <label for="speedSlider">Animations-Tempo:</label>
+        <input type="range" id="speedSlider" min="0" max="3" step="0.1" value="0.5">
+    </div>
+
+    <!-- Hier werden die Listen von JavaScript automatisch reingeladen -->
+    <div id="list-container"></div>
+</div>
+
+<script>
+    // === 1. DATEN-LOGIK (Standardwörter) ===
+    const baseEnd = ["Affix","Alex","Annex","Anthrax","Apex","Borax","Box","Calyx","Cervix","Climax","Complex","Cox","Convex","Cortex","Crucifix","Crux","Detox","Duplex","Equinox","Flax","Flex","Flux","Fox","Hax","Hex","Helix","hex","Hoax","Ibex","Inbox","Index","Jukebox","Kleenex","Larynx","Latex","Lynx","Matrix","Max","Minimax","Mix","Multiplex","Orthodox","Outbox","Ox","Paradox","Phalanx","Phoenix","Pox","Prefix","Pyrex","Rex","Reflex","Relax","Remix","Sandbox","Sax","Sex","Six","Spandex","Sphinx","Styx","Suffix","Syntax","Tax","Tex","Thorax","Toolbox","Unisex","Unorthodox","Vertex","Vortex","Wax","xebec","xebecs","xeno","xenthic","xenophobe","xenophobes","xenophobic","xerography","xis","xray","xylem","xylo","xylophone","xylophones","xeric","Nox","xenon","xylitol","xenial","xenophobia","nix","dox"];
+    const baseStartEnd = ["Xanax","Xerox","XXX"];
+
+    // Speichert Wörter, die der Nutzer über das kleine '✖' ausgeblendet hat
+    let hiddenWords = new Set();
+
+    // === 2. LISTEN-RENDER-LOGIK ===
+    function renderEverything() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = ''; // Container leeren
+
+        // Eigene Wörter aus dem Browser-Speicher (LocalStorage) abrufen
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
+        
+        // Schneller Check, um eigene Wörter beim Rendern zu erkennen
+        let customWordsSet = new Set([...saved.end, ...saved.startEnd].map(w => w.toLowerCase()));
+
+        // Listen zusammenführen und alphabetisch sortieren
+        let allEnd = [...new Set([...baseEnd, ...saved.end])].sort((a,b) => a.localeCompare(b));
+        let allStartEnd = [...new Set([...baseStartEnd, ...saved.startEnd])].sort((a,b) => a.localeCompare(b));
+
+        // Kategorien ins HTML einbauen
+        container.appendChild(createCategoryDOM('Wörter, die auf "X" enden', allEnd, customWordsSet));
+        container.appendChild(createCategoryDOM('Wörter, die mit "X" beginnen UND auf "X" enden', allStartEnd, customWordsSet));
+    }
+
+    function createCategoryDOM(titleText, words, customWordsSet) {
+        let wrapper = document.createElement('div');
+        
+        // Titel
+        let title = document.createElement('div');
+        title.className = 'main-category-title';
+        title.innerText = titleText;
+        wrapper.appendChild(title);
+
+        // Nach Anfangsbuchstaben gruppieren
+        let groups = {};
+        words.forEach(w => {
+            let letter = w.charAt(0).toUpperCase();
+            if (!groups[letter]) groups[letter] = [];
+            groups[letter].push(w);
+        });
+
+        // HTML für jeden Buchstaben generieren
+        Object.keys(groups).sort().forEach(letter => {
+            let section = document.createElement('div');
+            section.className = 'letter-section';
+            
+            let header = document.createElement('span');
+            header.className = 'letter-header';
+            header.innerText = letter;
+            section.appendChild(header);
+
+            let ul = document.createElement('ul');
+            groups[letter].forEach(word => {
+                let li = document.createElement('li');
+                let wordLower = word.toLowerCase();
+                let isCustomWord = customWordsSet.has(wordLower);
+                
+                // Prüfen ob das Wort ausgeblendet sein soll
+                if (hiddenWords.has(wordLower)) li.style.display = 'none';
+                
+                li.innerText = word;
+                
+                // Button generieren (Unterscheidung zwischen Ausblenden und Löschen)
+                let btn = document.createElement('button');
+                
+                if (isCustomWord) {
+                    btn.className = 'delete-btn';
+                    btn.innerHTML = '🗑️';
+                    btn.title = 'Dauerhaft löschen';
+                    btn.onclick = () => { deleteCustomWord(word); };
+                } else {
+                    btn.className = 'hide-btn';
+                    btn.innerHTML = '✖';
+                    btn.title = 'Ausblenden';
+                    btn.onclick = () => {
+                        hiddenWords.add(wordLower);
+                        li.style.display = 'none';
+                    };
+                }
+                
+                li.appendChild(btn);
+                ul.appendChild(li);
+            });
+            section.appendChild(ul);
+            wrapper.appendChild(section);
+        });
+
+        return wrapper;
+    }
+
+    // === 3. INTERAKTIONEN (Wörter hinzufügen, löschen etc.) ===
+    function addNewWord() {
+        let input = document.getElementById('wordInput');
+        let word = input.value.trim();
+        
+        if (!word) return;
+        
+        let lower = word.toLowerCase();
+        if (!lower.endsWith('x')) {
+            alert('Das Wort muss zwingend auf "X" enden!');
+            return;
+        }
+
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
+
+        if (lower.startsWith('x')) {
+            if (!baseStartEnd.some(w => w.toLowerCase() === lower) && !saved.startEnd.some(w => w.toLowerCase() === lower)) {
+                saved.startEnd.push(word);
+            }
+        } else {
+            if (!baseEnd.some(w => w.toLowerCase() === lower) && !saved.end.some(w => w.toLowerCase() === lower)) {
+                saved.end.push(word);
+            }
+        }
+
+        localStorage.setItem('customXWords', JSON.stringify(saved));
+        input.value = '';
+        
+        // Falls das Wort vorher nur temporär ausgeblendet war, Ausblendung aufheben
+        hiddenWords.delete(lower);
+        
+        renderEverything();
+    }
+
+    function deleteCustomWord(wordToRemove) {
+        let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
+        let targetLower = wordToRemove.toLowerCase();
+        
+        // Wort aus beiden Speicher-Listen filtern
+        saved.end = saved.end.filter(w => w.toLowerCase() !== targetLower);
+        saved.startEnd = saved.startEnd.filter(w => w.toLowerCase() !== targetLower);
+        
+        localStorage.setItem('customXWords', JSON.stringify(saved));
+        
+        // Neu zeichnen
+        renderEverything();
+    }
+
+    // Enter-Taste im Eingabefeld erkennen
+    document.getElementById('wordInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') addNewWord();
+    });
+
+    function showAll() {
+        hiddenWords.clear(); // Vergiss alle ausgeblendeten Standard-Wörter
+        renderEverything();  // Zeichne neu
+    }
+
+    // Initiales Laden
+    renderEverything();
+
+    // === 4. CANVAS PARTIKEL HINTERGRUND ===
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const speedSlider = document.getElementById('speedSlider');
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let particles = [];
+    for(let i = 0; i < 80; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            baseVx: (Math.random() - 0.5) * 1.5,
+            baseVy: (Math.random() - 0.5) * 1.5
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+
+        let speedMult = parseFloat(speedSlider.value);
+
+        particles.forEach((p, i) => {
+            p.x += p.baseVx * speedMult; 
+            p.y += p.baseVy * speedMult;
+            
+            if(p.x < 0 || p.x > canvas.width) p.baseVx *= -1;
+            if(p.y < 0 || p.y > canvas.height) p.baseVy *= -1;
+            
+            ctx.beginPath(); 
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); 
+            ctx.fill();
+
+            for(let j = i + 1; j < particles.length; j++) {
+                let dx = p.x - particles[j].x;
+                let dy = p.y - particles[j].y;
+                if(Math.sqrt(dx * dx + dy * dy) < 150) {
+                    ctx.beginPath(); 
+                    ctx.moveTo(p.x, p.y); 
+                    ctx.lineTo(particles[j].x, particles[j].y); 
+                    ctx.stroke();
+                }
+            }
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+</body>
+</html>
