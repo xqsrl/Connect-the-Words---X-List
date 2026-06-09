@@ -13,9 +13,10 @@
         #canvas { position: absolute; top: 0; left: 0; z-index: 0; }
 
         .container { 
-            position: relative; z-index: 1; max-width: 800px; margin: 50px auto; 
+            position: relative; z-index: 1; max-width: 800px; margin: 40px auto; 
             background: rgba(0, 0, 0, 0.7); padding: 30px; border: 1px solid #fff; border-radius: 8px;
-            max-height: 80vh; overflow-y: auto; backdrop-filter: blur(5px);
+            /* Höhe angepasst, damit der Footer nichts überdeckt */
+            max-height: calc(100vh - 200px); overflow-y: auto; backdrop-filter: blur(5px);
         }
 
         /* Header & Input Bereich */
@@ -37,9 +38,54 @@
         }
         .btn-control:hover { background: #000; color: #fff; }
 
-        /* Partikel Slider */
-        .config-area { display: flex; align-items: center; gap: 10px; font-size: 0.9em; color: #ccc; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 20px; }
-        input[type="range"] { accent-color: #fff; cursor: pointer; }
+        /* --- NEUES SLIDER DESIGN --- */
+        .config-area { display: flex; align-items: center; gap: 15px; font-size: 0.95em; color: #ccc; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 20px; }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 150px;
+            background: transparent;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        /* Spur (Track) */
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer;
+            background: #444; border-radius: 2px;
+            transition: background 0.3s;
+        }
+        input[type="range"]:hover::-webkit-slider-runnable-track {
+            background: #666;
+        }
+        /* Griff (Thumb) */
+        input[type="range"]::-webkit-slider-thumb {
+            height: 16px; width: 16px; border-radius: 50%;
+            background: #fff; cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px; /* (Track height / 2) - (Thumb height / 2) */
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        /* Firefox Support */
+        input[type="range"]::-moz-range-track {
+            width: 100%; height: 4px; cursor: pointer;
+            background: #444; border-radius: 2px;
+        }
+        input[type="range"]::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%;
+            background: #fff; cursor: pointer; border: none;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            transition: transform 0.2s ease;
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.3);
+        }
 
         /* Hauptkategorien */
         .main-category-title { text-transform: uppercase; letter-spacing: 2px; color: #fff; background: rgba(255,255,255,0.1); padding: 10px; margin-top: 20px; border-left: 4px solid #fff; font-size: 1.4em; }
@@ -72,6 +118,53 @@
         }
         .delete-btn:hover { filter: grayscale(0%); transform: scale(1.2); }
         
+        /* --- NEUER FOOTER BEREICH (FIXIERT) --- */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.85); /* Etwas dunkler für besseren Kontrast */
+            backdrop-filter: blur(8px);
+            border-top: 1px solid #333;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            z-index: 10; /* Bleibt über dem Canvas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .footer-brand {
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .footer-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .footer-separator {
+            color: #444;
+            font-size: 0.8em;
+        }
+
         /* Scrollbar-Styling für den Container */
         .container::-webkit-scrollbar { width: 8px; }
         .container::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
@@ -88,20 +181,29 @@
         <button class="btn-control" onclick="showAll()">Ausgeblendete wiederherstellen</button>
     </div>
 
-    <!-- Bereich zum Hinzufügen von Wörtern (Zurücksetzen Button entfernt) -->
     <div class="input-area">
         <input type="text" id="wordInput" placeholder="Eigenes Wort hinzufügen (z.B. Matrix)...">
         <button class="btn-control" onclick="addNewWord()">Hinzufügen</button>
     </div>
 
-    <!-- Partikel Geschwindigkeit -->
+    <!-- Partikel Geschwindigkeit (Neues Design) -->
     <div class="config-area">
         <label for="speedSlider">Animations-Tempo:</label>
         <input type="range" id="speedSlider" min="0" max="3" step="0.1" value="0.5">
     </div>
 
-    <!-- Hier werden die Listen von JavaScript automatisch reingeladen -->
     <div id="list-container"></div>
+</div>
+
+<!-- Footer AUSSERHALB des Containers -->
+<div class="footer">
+    <div class="footer-brand">xq</div>
+    <div class="footer-links">
+        <a href="https://discord.com/users/1268984542664855557" target="_blank">Discord</a>
+        <span class="footer-separator">|</span>
+        <a href="https://www.roblox.com/users/profile?username=xq_srl" target="_blank">Roblox (xq_srl)</a>
+        <span class="footer-separator">
+    </div>
 </div>
 
 <script>
@@ -109,25 +211,19 @@
     const baseEnd = ["Affix","Alex","Annex","Anthrax","Apex","Borax","Box","Calyx","Cervix","Climax","Complex","Cox","Convex","Cortex","Crucifix","Crux","Detox","Duplex","Equinox","Flax","Flex","Flux","Fox","Hax","Hex","Helix","hex","Hoax","Ibex","Inbox","Index","Jukebox","Kleenex","Larynx","Latex","Lynx","Matrix","Max","Minimax","Mix","Multiplex","Orthodox","Outbox","Ox","Paradox","Phalanx","Phoenix","Pox","Prefix","Pyrex","Rex","Reflex","Relax","Remix","Sandbox","Sax","Sex","Six","Spandex","Sphinx","Styx","Suffix","Syntax","Tax","Tex","Thorax","Toolbox","Unisex","Unorthodox","Vertex","Vortex","Wax","xebec","xebecs","xeno","xenthic","xenophobe","xenophobes","xenophobic","xerography","xis","xray","xylem","xylo","xylophone","xylophones","xeric","Nox","xenon","xylitol","xenial","xenophobia","nix","dox"];
     const baseStartEnd = ["Xanax","Xerox","XXX"];
 
-    // Speichert Wörter, die der Nutzer über das kleine '✖' ausgeblendet hat
     let hiddenWords = new Set();
 
     // === 2. LISTEN-RENDER-LOGIK ===
     function renderEverything() {
         const container = document.getElementById('list-container');
-        container.innerHTML = ''; // Container leeren
+        container.innerHTML = ''; 
 
-        // Eigene Wörter aus dem Browser-Speicher (LocalStorage) abrufen
         let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
-        
-        // Schneller Check, um eigene Wörter beim Rendern zu erkennen
         let customWordsSet = new Set([...saved.end, ...saved.startEnd].map(w => w.toLowerCase()));
 
-        // Listen zusammenführen und alphabetisch sortieren
         let allEnd = [...new Set([...baseEnd, ...saved.end])].sort((a,b) => a.localeCompare(b));
         let allStartEnd = [...new Set([...baseStartEnd, ...saved.startEnd])].sort((a,b) => a.localeCompare(b));
 
-        // Kategorien ins HTML einbauen
         container.appendChild(createCategoryDOM('Wörter, die auf "X" enden', allEnd, customWordsSet));
         container.appendChild(createCategoryDOM('Wörter, die mit "X" beginnen UND auf "X" enden', allStartEnd, customWordsSet));
     }
@@ -135,13 +231,11 @@
     function createCategoryDOM(titleText, words, customWordsSet) {
         let wrapper = document.createElement('div');
         
-        // Titel
         let title = document.createElement('div');
         title.className = 'main-category-title';
         title.innerText = titleText;
         wrapper.appendChild(title);
 
-        // Nach Anfangsbuchstaben gruppieren
         let groups = {};
         words.forEach(w => {
             let letter = w.charAt(0).toUpperCase();
@@ -149,7 +243,6 @@
             groups[letter].push(w);
         });
 
-        // HTML für jeden Buchstaben generieren
         Object.keys(groups).sort().forEach(letter => {
             let section = document.createElement('div');
             section.className = 'letter-section';
@@ -165,12 +258,10 @@
                 let wordLower = word.toLowerCase();
                 let isCustomWord = customWordsSet.has(wordLower);
                 
-                // Prüfen ob das Wort ausgeblendet sein soll
                 if (hiddenWords.has(wordLower)) li.style.display = 'none';
                 
                 li.innerText = word;
                 
-                // Button generieren (Unterscheidung zwischen Ausblenden und Löschen)
                 let btn = document.createElement('button');
                 
                 if (isCustomWord) {
@@ -198,7 +289,7 @@
         return wrapper;
     }
 
-    // === 3. INTERAKTIONEN (Wörter hinzufügen, löschen etc.) ===
+    // === 3. INTERAKTIONEN ===
     function addNewWord() {
         let input = document.getElementById('wordInput');
         let word = input.value.trim();
@@ -226,9 +317,7 @@
         localStorage.setItem('customXWords', JSON.stringify(saved));
         input.value = '';
         
-        // Falls das Wort vorher nur temporär ausgeblendet war, Ausblendung aufheben
         hiddenWords.delete(lower);
-        
         renderEverything();
     }
 
@@ -236,27 +325,22 @@
         let saved = JSON.parse(localStorage.getItem('customXWords')) || { end: [], startEnd: [] };
         let targetLower = wordToRemove.toLowerCase();
         
-        // Wort aus beiden Speicher-Listen filtern
         saved.end = saved.end.filter(w => w.toLowerCase() !== targetLower);
         saved.startEnd = saved.startEnd.filter(w => w.toLowerCase() !== targetLower);
         
         localStorage.setItem('customXWords', JSON.stringify(saved));
-        
-        // Neu zeichnen
         renderEverything();
     }
 
-    // Enter-Taste im Eingabefeld erkennen
     document.getElementById('wordInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') addNewWord();
     });
 
     function showAll() {
-        hiddenWords.clear(); // Vergiss alle ausgeblendeten Standard-Wörter
-        renderEverything();  // Zeichne neu
+        hiddenWords.clear();
+        renderEverything();
     }
 
-    // Initiales Laden
     renderEverything();
 
     // === 4. CANVAS PARTIKEL HINTERGRUND ===
@@ -270,6 +354,14 @@
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+
+    let mouseX = -100;
+    let mouseY = -100;
+    
+    window.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
 
     let particles = [];
     for(let i = 0; i < 80; i++) {
@@ -289,8 +381,26 @@
         let speedMult = parseFloat(speedSlider.value);
 
         particles.forEach((p, i) => {
-            p.x += p.baseVx * speedMult; 
-            p.y += p.baseVy * speedMult;
+            let vx = p.baseVx * speedMult;
+            let vy = p.baseVy * speedMult;
+
+            const repulsionRadius = 150; 
+            const repulsionForce = 15;   
+            
+            let dx = p.x - mouseX;
+            let dy = p.y - mouseY;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < repulsionRadius) {
+                let force = (repulsionRadius - distance) / repulsionRadius; 
+                let angle = Math.atan2(dy, dx); 
+                
+                vx += Math.cos(angle) * force * repulsionForce;
+                vy += Math.sin(angle) * force * repulsionForce;
+            }
+
+            p.x += vx;
+            p.y += vy;
             
             if(p.x < 0 || p.x > canvas.width) p.baseVx *= -1;
             if(p.y < 0 || p.y > canvas.height) p.baseVy *= -1;
@@ -300,9 +410,9 @@
             ctx.fill();
 
             for(let j = i + 1; j < particles.length; j++) {
-                let dx = p.x - particles[j].x;
-                let dy = p.y - particles[j].y;
-                if(Math.sqrt(dx * dx + dy * dy) < 150) {
+                let dxCon = p.x - particles[j].x;
+                let dyCon = p.y - particles[j].y;
+                if(Math.sqrt(dxCon * dxCon + dyCon * dyCon) < 150) {
                     ctx.beginPath(); 
                     ctx.moveTo(p.x, p.y); 
                     ctx.lineTo(particles[j].x, particles[j].y); 
