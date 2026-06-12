@@ -5,13 +5,13 @@ Complete word lists for the Roblox game **Connect the Words**.
 ## 🌐 Websites
 
 ### 📌 X-Liste (Wörter mit "X")
-👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/X.html](https://xqsrl.github.io/Connect-the-Words---X-List/X.html)**
+👉 **GitHub Pages:** [https://xqsrl.github.io/Connect-the-Words--Lists/X.html](https://xqsrl.github.io/Connect-the-Words--Lists/X.html)
 
 ### 📌 Y-Liste (Wörter mit "Y")
-👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/Y.html](https://xqsrl.github.io/Connect-the-Words---X-List/Y.html)**
+👉 **GitHub Pages:** [https://xqsrl.github.io/Connect-the-Words--Lists/Y.html](https://xqsrl.github.io/Connect-the-Words--Lists/Y.html)
 
 ### 📌 Z-Liste (Wörter mit "Z")
-👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/Z.html](https://xqsrl.github.io/Connect-the-Words---X-List/Z.html)**
+👉 **GitHub Pages:** [https://xqsrl.github.io/Connect-the-Words--Lists/Z.html](https://xqsrl.github.io/Connect-the-Words--Lists/Z.html)
 
 ## ✨ Features
 - 📋 Comprehensive lists of all words with "X", "Y", or "Z"
