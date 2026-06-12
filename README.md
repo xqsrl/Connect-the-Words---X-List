@@ -7,7 +7,7 @@ The interactive word list is available online at:
 👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/](https://xqsrl.github.io/Connect-the-Words---X-List/)**
 
 ## ✨ Features
-- 📋 Comprehensive list of all words ending in "X"
+- 📋 Comprehensive list of all words with a "X"
 - ➕ Add your own custom words and save them
 - 🗑️ Permanently delete custom words
 - 👁️ Temporarily hide words
