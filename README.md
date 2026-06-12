@@ -1,22 +1,25 @@
-# Connect-the-Words---X-List
+# Connect-the-Words---X-List & Y-List
 
-Complete X word list for the Roblox game **Connect the Words**.
 
-## 🌐 Website
-The interactive word list is available online at:  
-👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/](https://xqsrl.github.io/Connect-the-Words---X-List/)**
+## 🌐 Websites
+
+### 📌 X-Liste (Wörter mit "X")
+👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/X.html](https://xqsrl.github.io/Connect-the-Words---X-List/X.html)**
+
+### 📌 Y-Liste (Wörter mit "Y")
+👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/Y.html](https://xqsrl.github.io/Connect-the-Words---X-List/Y.html)**
 
 ## ✨ Features
-- 📋 Comprehensive list of all words with a "X"
+- 📋 Comprehensive list of all words with an "X" or "Y"
 - ➕ Add your own custom words and save them
 - 🗑️ Permanently delete custom words
 - 👁️ Temporarily hide words
 - 🎨 Animated particle background
 - 📱 Responsive design
-- 💾 Automatic browser storage
+- 💾 Automatic browser storage (separate for each list)
 
 ## 📝 Version
-v1.1 - 12.06.2026
+v1.2 - 12.06.2026
 
 ---
 **Made by xq | Germany**

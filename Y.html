@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y-Wortliste - Pro Version</title>
+    <!-- Integriertes Favicon (schwarz/weißes Y) -->
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><text x='50' y='54' font-family='sans-serif' font-size='60' fill='white' text-anchor='middle' dominant-baseline='middle'>Y</text></svg>">
+    <style>
+        /* Grunddesign */
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #000; color: #fff; }
+        
+        /* Canvas Hintergrund */
+        #canvas { position: absolute; top: 0; left: 0; z-index: 0; }
+
+        .container { 
+            position: relative; z-index: 1; max-width: 800px; margin: 40px auto; 
+            background: rgba(0, 0, 0, 0.35); padding: 30px; border: 1px solid #fff; border-radius: 8px;
+            max-height: calc(100vh - 200px); overflow-y: auto; backdrop-filter: blur(8px);
+        }
+
+        /* Header & Input Bereich */
+        .header-area { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fff; margin-bottom: 20px; padding-bottom: 10px; }
+        h1 { margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .input-area { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
+        input[type="text"] { 
+            background: rgba(255,255,255,0.05); color: #fff; border: 1px solid #777; 
+            padding: 10px 15px; border-radius: 4px; font-size: 1rem; outline: none; flex-grow: 1;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        input[type="text"]:focus { border-color: #fff; background: rgba(255,255,255,0.1); }
+        
+        /* Suchleiste */
+        .search-container { margin-bottom: 20px; }
+        .search-bar { width: 100%; box-sizing: border-box; border-color: #555; }
+
+        /* Steuerungs-Buttons */
+        .btn-control {
+            background: #fff; color: #000; border: 2px solid #fff; padding: 10px 15px; 
+            font-weight: bold; cursor: pointer; border-radius: 4px; transition: all 0.3s;
+        }
+        .btn-control:hover { background: #000; color: #fff; }
+
+        /* Slider Design */
+        .config-area { display: flex; align-items: center; gap: 15px; font-size: 0.95em; color: #ccc; margin-bottom: 30px; border-bottom: 1px solid #444; padding-bottom: 20px; }
+        
+        input[type="range"] { -webkit-appearance: none; appearance: none; -moz-appearance: none; width: 150px; background: transparent; }
+        input[type="range"]:focus { outline: none; }
+
+        /* WebKit track */
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #444; border-radius: 2px; transition: background 0.3s;
+        }
+        input[type="range"]:hover::-webkit-slider-runnable-track { background: #666; }
+
+        /* WebKit thumb */
+        input[type="range"]::-webkit-slider-thumb {
+            height: 16px; width: 16px; border-radius: 50%; background: #fff; cursor: pointer;
+            -webkit-appearance: none; margin-top: -6px; box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+
+        /* Firefox track & thumb */
+        input[type="range"]::-moz-range-track {
+            width: 100%; height: 4px; cursor: pointer; background: #444; border-radius: 2px; transition: background 0.3s;
+        }
+        input[type="range"]:hover::-moz-range-track { background: #666; }
+
+        input[type="range"]::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%; background: #fff; cursor: pointer;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5); transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+        }
+        input[type="range"]::-moz-range-thumb:hover { transform: scale(1.3); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+
+        /* Kategorien & Listen */
+        .main-category-title { text-transform: uppercase; letter-spacing: 2px; color: #fff; background: rgba(255,255,255,0.1); padding: 10px; margin-top: 20px; border-left: 4px solid #fff; font-size: 1.4em; }
+        
+        /* Interaktiver Verwaltungs-Button (Hauptseite) */
+        .management-trigger {
+            background: rgba(255, 68, 68, 0.15);
+            border-left-color: #ff4444;
+            color: #ffdddd;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .management-trigger:hover {
+            background: rgba(255, 68, 68, 0.3);
+            transform: translateX(2px);
+        }
+
+        .letter-section { margin-bottom: 35px; }
+        .letter-header { font-size: 2.2rem; font-weight: 900; color: #fff; margin: 20px 0 10px 0; display: block; border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+        ul { list-style-type: none; padding: 0; margin: 0; line-height: 2; }
+        li { 
+            background: #fff; color: #000; margin: 4px; padding: 5px 8px 5px 12px; 
+            border-radius: 2px; display: inline-flex; align-items: center; font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Buttons in den Listen */
+        .hide-btn {
+            background: none; border: none; color: #666; font-size: 14px; 
+            margin-left: 10px; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s;
+        }
+        .hide-btn:hover { color: #000; }
+
+        .delete-btn {
+            background: none; border: none; font-size: 14px; margin-left: 10px; 
+            cursor: pointer; padding: 0; line-height: 1; transition: transform 0.2s; filter: grayscale(100%);
+        }
+        .delete-btn:hover { filter: grayscale(0%); transform: scale(1.2); }
+        
+        /* Footer */
+        .footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px 0;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); border-top: 1px solid #333;
+            text-align: center; font-size: 0.9rem; color: #888; z-index: 10; 
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .footer-brand { font-size: 1.1rem; font-weight: bold; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
+        .footer-links { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .footer-links a { color: #aaa; text-decoration: none; transition: color 0.2s, text-shadow 0.2s; }
+        .footer-links a:hover { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .footer-separator { color: #444; font-size: 0.8em; }
+
+        /* Scrollbar */
+        .container::-webkit-scrollbar { width: 8px; }
+        .container::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+        .container::-webkit-scrollbar-thumb { background: #fff; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+    <div class="header-area">
+        <h1>Y-Fokus</h1>
+        <button class="btn-control" onclick="showAll()">Ausgeblendete wiederherstellen</button>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="wordInput" placeholder="Eigenes Wort hinzufügen (z.B. Story, Yay)...">
+        <button class="btn-control" onclick="addNewWord()">Hinzufügen</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchBar" class="search-bar" placeholder="Wortliste live durchsuchen..." oninput="renderEverything()">
+    </div>
+
+    <div class="config-area">
+        <label for="speedSlider">Animations-Tempo:</label>
+        <input type="range" id="speedSlider" min="0" max="3" step="0.1" value="0.5">
+    </div>
+
+    <div id="list-container"></div>
+</div>
+
+<div class="footer">
+    <div class="footer-brand">xq</div>
+    <div class="footer-links">
+        <a href="https://discord.com/users/1268984542664855557" target="_blank">Discord</a>
+        <span class="footer-separator">|</span>
+        <a href="https://www.roblox.com/users/profile?username=xq_srl" target="_blank">Roblox (xq_srl)</a>
+    </div>
+</div>
+
+<script>
+    const baseEnd = ["Abbey", "Academy", "Agency", "Alley", "Ally", "Anatomy", "Anomaly", "Apology", "Army", "Array", "Baby", "Balcony", "Battery", "Beauty", "Belly", "Berry", "Body", "Boundary", "Boy", "Butterfly", "Candy", "Canopy", "Capacity", "Category", "Cemetery", "Century", "Charity", "Chemistry", "Cherry", "City", "Clay", "Colony", "Comedy", "Company", "Copy", "Country", "County", "Crazy", "Cry", "Currency", "Dairy", "Daisy", "Day", "Decay", "Delay", "Delivery", "Deputy", "Destiny", "Diary", "Dictionary", "Directory", "Discovery", "Display", "Donkey", "Duty", "Economy", "Embassy", "Emergency", "Enemy", "Energy", "Entity", "Entry", "Envy", "Essay", "Factory", "Faculty", "Family", "Fantasy", "Ferry", "Fly", "Gallery", "Galaxy", "Gateway", "Glory", "Gravity", "Grocery", "Guy", "Harmony", "Highway", "History", "Hobby", "Holiday", "Honey", "Industry", "Injury", "Inquiry", "Irony", "Ivory", "Jealousy", "Jelly", "Jersey", "Journey", "Joy", "Jury", "Key", "Kidney", "Lady", "Legacy", "Liberty", "Library", "Lily", "Lobby", "Lottery", "Luxury", "Majority", "Melody", "Memory", "Mercy", "Minority", "Misery", "Money", "Monkey", "Monopoly", "Mystery", "Navy", "Necessity", "Nursery", "Parity", "Party", "Penalty", "Penny", "Philosophy", "Pity", "Play", "Poetry", "Policy", "Poverty", "Privacy", "Property", "Puppy", "Purity", "Quality", "Quantity", "Query", "Ray", "Reality", "Recovery", "Remedy", "Reply", "Royalty", "Salary", "Sanctuary", "Sky", "Society", "Spray", "Spy", "Story", "Strategy", "Study", "Summary", "Supply", "Surgery", "Sympathy", "Symphony", "Technology", "Territory", "Testimony", "Theory", "Therapy", "Toy", "Tragedy", "Tray", "Treaty", "Try", "Turkey", "University", "Valley", "Variety", "Victory", "Way", "Whisky", "Why"];
+    const baseStartEnd = ["Yay", "Yearly", "Yesterday", "Yummy", "Youthfully", "Yappy"];
+
+    let hiddenWords = new Set();
+    let currentView = 'main'; // Kann 'main' oder 'management' sein
+
+    function switchView(view) {
+        currentView = view;
+        renderEverything();
+    }
+
+    function renderEverything() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = ''; 
+
+        const searchQuery = document.getElementById('searchBar').value.toLowerCase().trim();
+
+        // LocalStorage Key geändert, damit Y-Wörter getrennt von X-Wörtern gespeichert werden
+        let saved = JSON.parse(localStorage.getItem('customYWords')) || { end: [], startEnd: [], other: [] };
+        if (!saved.other) saved.other = [];
+
+        let allEnd = [...new Set([...baseEnd, ...saved.end])];
+        let allStartEnd = [...new Set([...baseStartEnd, ...saved.startEnd])];
+        let allOther = [...new Set(saved.other)];
+        let allCustom = [...new Set([...saved.end, ...saved.startEnd, ...saved.other])];
+
+        // --- ANSICHT 1: MANAGEMENT-SEITE ---
+        if (currentView === 'management') {
+            let backBtn = document.createElement('button');
+            backBtn.className = 'btn-control';
+            backBtn.style.marginBottom = '20px';
+            backBtn.innerText = '⬅ Zurück zur Hauptübersicht';
+            backBtn.onclick = () => switchView('main');
+            container.appendChild(backBtn);
+
+            const catCustom = createCategoryDOM('Hinzugefügte Wörter (Verwaltung)', allCustom, searchQuery, true);
+            if (catCustom) {
+                container.appendChild(catCustom);
+            } else if (allCustom.length === 0) {
+                switchView('main');
+            }
+            return; 
+        }
+
+        // --- ANSICHT 2: HAUPTANSICHT ---
+        if (allCustom.length > 0) {
+            let trigger = document.createElement('div');
+            trigger.className = 'main-category-title management-trigger';
+            trigger.innerText = '📋 Hinzugefügte Wörter verwalten ➔';
+            trigger.onclick = () => switchView('management');
+            container.appendChild(trigger);
+        }
+
+        const catEnd = createCategoryDOM('Wörter, die auf "Y" enden', allEnd, searchQuery, false);
+        if (catEnd) container.appendChild(catEnd);
+
+        const catStartEnd = createCategoryDOM('Wörter, die mit "Y" beginnen UND auf "Y" enden', allStartEnd, searchQuery, false);
+        if (catStartEnd) container.appendChild(catStartEnd);
+
+        if (allOther.length > 0) {
+            const catOther = createCategoryDOM('Weitere Wörter', allOther, searchQuery, false);
+            if (catOther) container.appendChild(catOther);
+        }
+
+        if (container.children.length === 0) {
+            let emptyMessage = document.createElement('div');
+            emptyMessage.style.color = '#ccc';
+            emptyMessage.style.padding = '18px 16px';
+            emptyMessage.style.textAlign = 'center';
+            emptyMessage.style.fontStyle = 'italic';
+            emptyMessage.innerText = 'Keine passenden Wörter gefunden. Probiere eine andere Suche oder ergänze die Liste mit einem eigenen Wort.';
+            container.appendChild(emptyMessage);
+        }
+    }
+
+    function createCategoryDOM(titleText, words, searchQuery, isManagementCategory) {
+        let filteredWords = words.filter(w => w.toLowerCase().includes(searchQuery));
+        if (filteredWords.length === 0) return null;
+
+        let wrapper = document.createElement('div');
+        
+        let title = document.createElement('div');
+        title.className = 'main-category-title';
+        title.innerText = titleText;
+        wrapper.appendChild(title);
+
+        let groups = {};
+        filteredWords.forEach(w => {
+            let letter = w.charAt(0).toUpperCase();
+            if (!groups[letter]) groups[letter] = [];
+            groups[letter].push(w);
+        });
+
+        let hasVisibleContent = false;
+
+        Object.keys(groups).sort().forEach(letter => {
+            let letterHasWords = false;
+            let section = document.createElement('div');
+            section.className = 'letter-section';
+            
+            let header = document.createElement('span');
+            header.className = 'letter-header';
+            header.innerText = letter;
+            section.appendChild(header);
+
+            let ul = document.createElement('ul');
+            
+            groups[letter].sort((a, b) => a.localeCompare(b)).forEach(word => {
+                let wordLower = word.toLowerCase();
+                
+                if (!isManagementCategory && hiddenWords.has(wordLower)) return;
+                
+                letterHasWords = true;
+                hasVisibleContent = true;
+
+                let li = document.createElement('li');
+                li.innerText = word;
+                
+                let btn = document.createElement('button');
+                
+                if (isManagementCategory) {
+                    btn.className = 'delete-btn';
+                    btn.innerHTML = '🗑️';
+                    btn.title = 'Dauerhaft löschen';
+                    btn.onclick = () => { deleteCustomWord(word); };
+                } else {
+                    btn.className = 'hide-btn';
+                    btn.innerHTML = '✖';
+                    btn.title = 'Ausblenden';
+                    btn.onclick = () => {
+                        hiddenWords.add(wordLower);
+                        renderEverything();
+                    };
+                }
+                
+                li.appendChild(btn);
+                ul.appendChild(li);
+            });
+
+            if (letterHasWords) {
+                section.appendChild(ul);
+                wrapper.appendChild(section);
+            }
+        });
+
+        return hasVisibleContent ? wrapper : null;
+    }
+
+    function addNewWord() {
+        let input = document.getElementById('wordInput');
+        let word = input.value.trim();
+        
+        if (!word) return;
+        
+        let lower = word.toLowerCase();
+        let saved = JSON.parse(localStorage.getItem('customYWords')) || { end: [], startEnd: [], other: [] };
+        if (!saved.other) saved.other = [];
+
+        // Logik auf Y angepasst
+        if (lower.startsWith('y') && lower.endsWith('y')) {
+            if (!baseStartEnd.some(w => w.toLowerCase() === lower) && !saved.startEnd.some(w => w.toLowerCase() === lower)) {
+                saved.startEnd.push(word);
+            }
+        } else if (lower.endsWith('y')) {
+            if (!baseEnd.some(w => w.toLowerCase() === lower) && !saved.end.some(w => w.toLowerCase() === lower)) {
+                saved.end.push(word);
+            }
+        } else {
+            if (!saved.other.some(w => w.toLowerCase() === lower)) {
+                saved.other.push(word);
+            }
+        }
+
+        localStorage.setItem('customYWords', JSON.stringify(saved));
+        input.value = '';
+        
+        hiddenWords.delete(lower);
+        renderEverything();
+    }
+
+    function deleteCustomWord(wordToRemove) {
+        let saved = JSON.parse(localStorage.getItem('customYWords')) || { end: [], startEnd: [], other: [] };
+        let targetLower = wordToRemove.toLowerCase();
+        
+        if (saved.end) saved.end = saved.end.filter(w => w.toLowerCase() !== targetLower);
+        if (saved.startEnd) saved.startEnd = saved.startEnd.filter(w => w.toLowerCase() !== targetLower);
+        if (saved.other) saved.other = saved.other.filter(w => w.toLowerCase() !== targetLower);
+        
+        localStorage.setItem('customYWords', JSON.stringify(saved));
+        hiddenWords.delete(targetLower);
+        
+        let allCustomCount = (saved.end||[]).length + (saved.startEnd||[]).length + (saved.other||[]).length;
+        if (allCustomCount === 0) {
+            currentView = 'main'; 
+        }
+        
+        renderEverything();
+    }
+
+    document.getElementById('wordInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') addNewWord();
+    });
+
+    function showAll() {
+        hiddenWords.clear();
+        renderEverything();
+    }
+
+    renderEverything();
+
+    // === CANVAS HINTERGRUND ===
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const speedSlider = document.getElementById('speedSlider');
+    
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let mouseX = -100; let mouseY = -100;
+    window.addEventListener('mousemove', function(e) { mouseX = e.clientX; mouseY = e.clientY; });
+
+    let particles = [];
+    for(let i = 0; i < 80; i++) {
+        particles.push({
+            x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            baseVx: (Math.random() - 0.5) * 1.5, baseVy: (Math.random() - 0.5) * 1.5
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white'; ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+
+        let speedMult = parseFloat(speedSlider.value);
+
+        particles.forEach((p, i) => {
+            let vx = p.baseVx * speedMult; let vy = p.baseVy * speedMult;
+            const repulsionRadius = 150; const repulsionForce = 15;   
+            
+            let dx = p.x - mouseX; let dy = p.y - mouseY;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < repulsionRadius) {
+                let force = (repulsionRadius - distance) / repulsionRadius; 
+                let angle = Math.atan2(dy, dx); 
+                vx += Math.cos(angle) * force * repulsionForce;
+                vy += Math.sin(angle) * force * repulsionForce;
+            }
+
+            p.x += vx; p.y += vy;
+            
+            if(p.x < 0 || p.x > canvas.width) p.baseVx *= -1;
+            if(p.y < 0 || p.y > canvas.height) p.baseVy *= -1;
+            
+            ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+
+            for(let j = i + 1; j < particles.length; j++) {
+                let dxCon = p.x - particles[j].x; let dyCon = p.y - particles[j].y;
+                if(Math.sqrt(dxCon * dxCon + dyCon * dyCon) < 150) {
+                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                }
+            }
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+</body>
+</html>
