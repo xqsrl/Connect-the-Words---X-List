@@ -1,4 +1,4 @@
-# Connect-the-Words---X-List & Y-List
+# Connect-the-Words-Lists
 
 
 ## 🌐 Websites
