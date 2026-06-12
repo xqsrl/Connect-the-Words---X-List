@@ -1,5 +1,6 @@
-# Connect-the-Words-Lists
+# Connect-the-Words Word Lists
 
+Complete word lists for the Roblox game **Connect the Words**.
 
 ## 🌐 Websites
 
@@ -9,8 +10,11 @@
 ### 📌 Y-Liste (Wörter mit "Y")
 👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/Y.html](https://xqsrl.github.io/Connect-the-Words---X-List/Y.html)**
 
+### 📌 Z-Liste (Wörter mit "Z")
+👉 **[https://xqsrl.github.io/Connect-the-Words---X-List/Z.html](https://xqsrl.github.io/Connect-the-Words---X-List/Z.html)**
+
 ## ✨ Features
-- 📋 Comprehensive list of all words with an "X" or "Y"
+- 📋 Comprehensive lists of all words with "X", "Y", or "Z"
 - ➕ Add your own custom words and save them
 - 🗑️ Permanently delete custom words
 - 👁️ Temporarily hide words
@@ -19,7 +23,7 @@
 - 💾 Automatic browser storage (separate for each list)
 
 ## 📝 Version
-v1.2 - 12.06.2026
+v1.4 - 12.06.2026
 
 ---
 **Made by xq | Germany**
